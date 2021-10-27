@@ -1,0 +1,24 @@
+[tool.isort]
+profile = "black"
+src_paths = "mpl_image_labeller"
+multi_line_output = 3
+
+[tool.pydocstyle]
+match_dir = "mpl_image_labeller"
+convention = "numpy"
+add_select = ["D402","D415","D417"]
+
+[tool.pytest.ini_options]
+addopts = "-W error"
+
+[tool.mypy]
+files = "mpl_image_labeller"
+warn_unused_configs = true
+warn_unused_ignores = true
+check_untyped_defs = true
+implicit_reexport = false
+# this is strict!
+# disallow_untyped_defs = true
+show_column_numbers = true
+show_error_codes = true
+ignore_missing_imports = true
