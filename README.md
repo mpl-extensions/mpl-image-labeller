@@ -6,6 +6,11 @@
 
 Use Matplotlib to label images for classification. Works anywhere Matplotlib does - from the notebook to a standalone gui!
 
+## Install
+
+```bash
+pip install mpl-image-labeller
+```
 ## Key features
 - Simple interface
 - Uses keys instead of mouse
