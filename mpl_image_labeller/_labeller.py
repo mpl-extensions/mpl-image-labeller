@@ -1,9 +1,9 @@
-from typing import TYPE_CHECKING, List, Union
+from typing import List, Union
 
+from matplotlib.backend_bases import key_press_handler
 
 # if TYPE_CHECKING:
 from matplotlib.figure import Figure
-from matplotlib.backend_bases import key_press_handler
 from numpy.typing import ArrayLike
 
 
