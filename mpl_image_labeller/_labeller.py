@@ -1,8 +1,7 @@
 from typing import List, Union
 
+import numpy as np
 from matplotlib.backend_bases import key_press_handler
-
-# if TYPE_CHECKING:
 from matplotlib.figure import Figure
 
 
@@ -114,7 +113,7 @@ class image_labeller:
 
         self._image_index = 0
         self._ax = self._fig.add_subplot(111)
-        self._im = self._ax.imshow(self._get_image(0))
+        self._im = self._ax.imshow(self._get_image(0), aspect="equal")
 
         # shift axis to make room for list of keybindings
         box = self._ax.get_position()
@@ -202,7 +201,9 @@ class image_labeller:
         )
 
     def _update_displayed(self):
-        self._im.set_data(self._get_image(self._image_index))
+        image = np.asarray(self._get_image(self._image_index))
+        self._im.set_data(image)
+        self._im.set_extent((-0.5, image.shape[1] - 0.5, image.shape[0] - 0.5, -0.5))
         self._update_title()
         self._fig.canvas.draw_idle()
 

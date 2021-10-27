@@ -16,6 +16,7 @@ pip install mpl-image-labeller
 - Uses keys instead of mouse
 - Only depends on Matplotlib
     - Works anywhere - from inside Jupyter to any supported GUI framework
+- Displays images with correct aspect ratio
 - Easily configurable keymap
 - Smart interactions with default Matplotlib keymap
 
