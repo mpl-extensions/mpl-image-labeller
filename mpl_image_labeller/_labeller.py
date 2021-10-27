@@ -57,10 +57,13 @@ class image_labeller:
                     "If images is a callable then N_images must be provided"
                 )
             self._N_images = N_images
+
             def _get_image(i):
                 return self._images(i)
+
         else:
             self._N_images = len(images)
+
             def _get_image(i):
                 return self._images[i]
 

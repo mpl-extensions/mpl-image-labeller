@@ -2,10 +2,10 @@
 # if you do this then you must also provide *N_images* in the labeller constructor
 
 
-from mpl_image_labeller import image_labeller
 import matplotlib.pyplot as plt
-
 from numpy.random import default_rng
+
+from mpl_image_labeller import image_labeller
 
 
 def lazy_image_generator(idx):
