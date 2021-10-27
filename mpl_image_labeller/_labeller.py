@@ -89,6 +89,7 @@ class image_labeller:
         self._image_index = 0
         self._ax = self._fig.add_subplot(111)
         self._im = self._ax.imshow(images[0])
+        self._update_title()
 
         self._fig.canvas.mpl_connect("key_press_event", self._key_press)
 
@@ -128,11 +129,14 @@ class image_labeller:
             self._image_index = value
         self._update_displayed()
 
-    def _update_displayed(self):
-        self._im.set_data(self._images[self._image_index])
+    def _update_title(self):
         self._ax.set_title(
             f"Image {self._image_index} - Label: {self._labels[self._image_index]}"
         )
+
+    def _update_displayed(self):
+        self._im.set_data(self._images[self._image_index])
+        self._update_title()
         self._fig.canvas.draw_idle()
 
     def _key_press(self, event):
@@ -144,12 +148,10 @@ class image_labeller:
             self._labels[self._image_index] = self._classes[
                 self._label_keymap[event.key]
             ]
-            self._ax.set_title(
-                f"Image {self._image_index} - Label: {self._labels[self._image_index]}"
-            )
             if self._label_advances:
                 self.image_index += 1
             else:
                 # only updating the text
+                self._update_title()
                 # TODO: blit just the text here
                 self._fig.canvas.draw_idle()
