@@ -52,6 +52,8 @@ class image_labeller:
             self._labels = [None] * len(images)
         elif len(init_labels) != len(images):
             raise ValueError("init_labels must have the same length as images")
+        else:
+            self._labels = init_labels
 
         if label_keymap == "1234":
             if len(classes) > 10:
