@@ -23,6 +23,7 @@ class image_labeller:
         classes: ArrayLike,
         init_labels: ArrayLike = None,
         label_keymap: Union[List[str], str] = "1234",
+        labelling_advances_image: bool = True,
         fig: Figure = None,
     ):
         """
@@ -40,11 +41,14 @@ class image_labeller:
             in order to the classes. WARNING: These keys will be removed from the default
             keymap for that figure. So if *s* is included then *s* will no longer save the
             figure.
+        labelling_advances_image : bool, default: True
+            Whether labelling an image should advance to the next image.
         fig : Figure
             An empty figure to build the UI in. Use this to embed image_labeller into
             a gui framework.
         """
         self._images = images
+        self._label_advances = labelling_advances_image
         if init_labels is None:
             self._labels = [None] * len(images)
         elif len(init_labels) != len(images):
@@ -143,5 +147,9 @@ class image_labeller:
             self._ax.set_title(
                 f"Image {self._image_index} - Label: {self._labels[self._image_index]}"
             )
-            # TODO: blit just the text here
-            self._fig.canvas.draw_idle()
+            if self._label_advances:
+                self.image_index += 1
+            else:
+                # only updating the text
+                # TODO: blit just the text here
+                self._fig.canvas.draw_idle()
