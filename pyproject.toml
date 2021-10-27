@@ -1,3 +1,6 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm>=6.2"]
+
 [tool.isort]
 profile = "black"
 src_paths = "mpl_image_labeller"
