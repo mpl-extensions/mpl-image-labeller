@@ -14,6 +14,7 @@ Use Matplotlib to label images for classification. Works anywhere Matplotlib doe
 - Easily configurable keymap
 - Smart interactions with default Matplotlib keymap
 
+![gif of usage for labelling images of cats and dogs](example.gif)
 ## Usage
 
 ```python
