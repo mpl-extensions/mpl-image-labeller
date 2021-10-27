@@ -2,6 +2,7 @@ from typing import List, Union
 
 import numpy as np
 from matplotlib.backend_bases import key_press_handler
+from matplotlib.cbook import CallbackRegistry
 from matplotlib.figure import Figure
 
 
@@ -155,6 +156,7 @@ class image_labeller:
         )
 
         self._fig.canvas.mpl_connect("key_press_event", self._key_press)
+        self._observers = CallbackRegistry()
 
     @property
     def ax(self):
@@ -205,6 +207,7 @@ class image_labeller:
         self._im.set_data(image)
         self._im.set_extent((-0.5, image.shape[1] - 0.5, image.shape[0] - 0.5, -0.5))
         self._update_title()
+        self._observers.process("image-changed", self._image_index, image)
         self._fig.canvas.draw_idle()
 
     def _key_press(self, event):
@@ -213,9 +216,9 @@ class image_labeller:
         elif event.key == "right":
             self.image_index += 1
         elif event.key in self._label_keymap:
-            self._labels[self._image_index] = self._classes[
-                self._label_keymap[event.key]
-            ]
+            klass = self._classes[self._label_keymap[event.key]]
+            self._labels[self._image_index] = klass
+            self._observers.process("label-assigned", self._image_index, klass)
             if self._label_advances:
                 if self.image_index == self._N_images - 1:
                     # make sure we update the title we are on the last image
@@ -228,3 +231,41 @@ class image_labeller:
                 self._update_title()
                 # TODO: blit just the text here
                 self._fig.canvas.draw_idle()
+
+    def on_label_assigned(self, func):
+        """
+        Connect *func* as a callback function for when a label is assigned
+        to an image. *func* will receive the index of the image and the
+        new class.
+
+        Parameters
+        ----------
+        func : callable
+            Function to call when a point is added.
+
+        Returns
+        -------
+        int
+            Connection id (which can be used to disconnect *func*).
+        """
+        return self._observers.connect("label-assigned", lambda *args: func(*args))
+
+    def on_image_changed(self, func):
+        """
+        Connect *func* as a callback function for when the displayed image
+        is changed. *func* will receive the index of the new image and the
+        image. `fig.canvas.draw_idle` will be called after the callback is
+        executed so if you are modifying the figure then you do not need to
+        explicitly call *draw* yourself.
+
+        Parameters
+        ----------
+        func : callable
+            Function to call when a point is added.
+
+        Returns
+        -------
+        int
+            Connection id (which can be used to disconnect *func*).
+        """
+        return self._observers.connect("image-changed", lambda *args: func(*args))

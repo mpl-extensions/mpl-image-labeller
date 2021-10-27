@@ -19,6 +19,7 @@ pip install mpl-image-labeller
 - Displays images with correct aspect ratio
 - Easily configurable keymap
 - Smart interactions with default Matplotlib keymap
+- Callback System (see `examples/callbacks.py`)
 
 ![gif of usage for labelling images of cats and dogs](example.gif)
 
