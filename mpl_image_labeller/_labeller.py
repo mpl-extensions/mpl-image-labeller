@@ -133,6 +133,10 @@ class image_labeller:
         self._fig.canvas.mpl_connect("key_press_event", self._key_press)
 
     @property
+    def ax(self):
+        return self._ax
+
+    @property
     def labels(self):
         return self._labels
 

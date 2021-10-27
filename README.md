@@ -35,6 +35,9 @@ labeller = image_labeller(
 plt.show()
 ```
 
+You can further modify the image (e.g. add masks over them) by using the plotting methods on
+axis object accessible by `labeller.ax`.
+
 ### Controls
 
 - `<-` move one image back
