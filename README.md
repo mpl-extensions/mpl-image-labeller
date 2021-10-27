@@ -20,6 +20,7 @@ pip install mpl-image-labeller
 - Smart interactions with default Matplotlib keymap
 
 ![gif of usage for labelling images of cats and dogs](example.gif)
+
 ## Usage
 
 ```python
@@ -35,8 +36,14 @@ labeller = image_labeller(
 plt.show()
 ```
 
+**accessing the axis**
 You can further modify the image (e.g. add masks over them) by using the plotting methods on
 axis object accessible by `labeller.ax`.
+
+**Lazy Loading Images**
+If you want to lazy load your images you can provide a function to give the images. This function should take
+the integer `idx` as an argument and return the image that corresponds to that index. If you do this then you
+must also provide `N_images` in the constructor to let the object know how many images it should expect. See `examples/lazy_loading.py` for an example.
 
 ### Controls
 

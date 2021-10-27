@@ -23,6 +23,7 @@ class image_labeller:
         init_labels=None,
         label_keymap: Union[List[str], str] = "1234",
         labelling_advances_image: bool = True,
+        N_images=None,
         fig: Figure = None,
     ):
         """
@@ -42,15 +43,34 @@ class image_labeller:
             longer perform savefig.
         labelling_advances_image : bool, default: True
             Whether labelling an image should advance to the next image.
+        N_images : int or None
+            The number of images. Required if passing a Callable for images, otherwise
+            ignored.
         fig : Figure
             An empty figure to build the UI in. Use this to embed image_labeller into
             a gui framework.
         """
         self._images = images
+        if callable(images):
+            if not isinstance(N_images, int):
+                raise TypeError(
+                    "If images is a callable then N_images must be provided"
+                )
+            self._N_images = N_images
+            def _get_image(i):
+                return self._images(i)
+        else:
+            self._N_images = len(images)
+            def _get_image(i):
+                return self._images[i]
+
+        self._get_image = _get_image
+
         self._label_advances = labelling_advances_image
+
         if init_labels is None:
-            self._labels = [None] * len(images)
-        elif len(init_labels) != len(images):
+            self._labels = [None] * self._N_images
+        elif len(init_labels) != self._N_images:
             raise ValueError("init_labels must have the same length as images")
         else:
             self._labels = init_labels
@@ -91,7 +111,7 @@ class image_labeller:
 
         self._image_index = 0
         self._ax = self._fig.add_subplot(111)
-        self._im = self._ax.imshow(images[0])
+        self._im = self._ax.imshow(self._get_image(0))
 
         # shift axis to make room for list of keybindings
         box = self._ax.get_position()
@@ -144,7 +164,7 @@ class image_labeller:
 
     @labels.setter
     def labels(self, value):
-        if len(value) != len(self._images):
+        if len(value) != self._N_images:
             raise ValueError(
                 "Length of labels must be the same as the number of images"
             )
@@ -156,15 +176,14 @@ class image_labeller:
 
     @image_index.setter
     def image_index(self, value):
-        N = len(self._images)
         if value == self._image_index:
             # quick return to avoid unnecessary draw
             return
-        elif value >= N:
-            if self._image_index == N - 1:
+        elif value >= self._N_images:
+            if self._image_index == self._N_images - 1:
                 # quick return to avoid unnecessary draw
                 return
-            self._image_index = N - 1
+            self._image_index = self._N_images - 1
         elif value < 0:
             if self._image_index == 0:
                 # quick return to avoid unnecessary draw
@@ -180,7 +199,7 @@ class image_labeller:
         )
 
     def _update_displayed(self):
-        self._im.set_data(self._images[self._image_index])
+        self._im.set_data(self._get_image(self._image_index))
         self._update_title()
         self._fig.canvas.draw_idle()
 
@@ -194,7 +213,7 @@ class image_labeller:
                 self._label_keymap[event.key]
             ]
             if self._label_advances:
-                if self.image_index == len(self._images) - 1:
+                if self.image_index == self._N_images - 1:
                     # make sure we update the title we are on the last image
                     self._update_title()
                     self._fig.canvas.draw_idle()
