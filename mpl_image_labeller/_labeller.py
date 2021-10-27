@@ -3,7 +3,17 @@ from typing import TYPE_CHECKING, List, Union
 
 # if TYPE_CHECKING:
 from matplotlib.figure import Figure
+from matplotlib.backend_bases import key_press_handler
 from numpy.typing import ArrayLike
+
+
+def gen_key_press_handler(skip_keys):
+    def handler(event, canvas=None, toolbar=None):
+        if event.key in skip_keys:
+            return
+        key_press_handler(event, canvas, toolbar)
+
+    return handler
 
 
 class image_labeller:
@@ -27,7 +37,9 @@ class image_labeller:
         label_keymap : list of str, or str
             If a str must be one of the predefined values *1234* (1, 2, 3,..),
             *qwerty* (q, w, e, r, t, y). If an iterable then the items will be assigned
-            in order to the classes.
+            in order to the classes. WARNING: These keys will be removed from the default
+            keymap for that figure. So if *s* is included then *s* will no longer save the
+            figure.
         fig : Figure
             An empty figure to build the UI in. Use this to embed image_labeller into
             a gui framework.
@@ -61,6 +73,14 @@ class image_labeller:
             self._fig = plt.figure()
         else:
             self._fig = fig
+
+        # "remove" keys from the default keymap by overwriting the key handler method
+        # see https://gitter.im/matplotlib/matplotlib?at=617988daee6c260cf743e9cb
+        self._fig.canvas.mpl_disconnect(self._fig.canvas.manager.key_press_handler_id)
+
+        self._fig.canvas.manager.key_press_handler_id = self._fig.canvas.mpl_connect(
+            "key_press_event", gen_key_press_handler(list(self._label_keymap.keys()))
+        )
 
         self._image_index = 0
         self._ax = self._fig.add_subplot(111)
