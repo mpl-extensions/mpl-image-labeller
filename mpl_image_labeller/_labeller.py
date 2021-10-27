@@ -20,7 +20,7 @@ class image_labeller:
         self,
         images,
         classes,
-        init_labels = None,
+        init_labels=None,
         label_keymap: Union[List[str], str] = "1234",
         labelling_advances_image: bool = True,
         fig: Figure = None,
@@ -73,7 +73,7 @@ class image_labeller:
         if fig is None:
             import matplotlib.pyplot as plt
 
-            self._fig = plt.figure()
+            self._fig = plt.figure(constrained_layout=True)
         else:
             self._fig = fig
 
@@ -88,7 +88,45 @@ class image_labeller:
         self._image_index = 0
         self._ax = self._fig.add_subplot(111)
         self._im = self._ax.imshow(images[0])
+
+        # shift axis to make room for list of keybindings
+        box = self._ax.get_position()
+        box.x0 = box.x0 - 0.20
+        box.x1 = box.x1 - 0.20
+        self._ax.set_position(box)
         self._update_title()
+
+        # these are matplotlib.patch.Patch properties
+        props = dict(boxstyle="round", facecolor="wheat", alpha=0.5)
+
+        textstr = """Keybindings
+        <- : Previous Image
+        -> : Next Image"""
+
+        self._ax.text(
+            1.05,
+            0.95,
+            textstr,
+            transform=self._ax.transAxes,
+            fontsize=14,
+            verticalalignment="top",
+            bbox=props,
+            horizontalalignment="left",
+        )
+
+        textstr = """Class Keybindings:\n"""
+        for k, v in self._label_keymap.items():
+            textstr += f"{k} : {self._classes[v]}\n"
+
+        self._ax.text(
+            1.05,
+            0.55,
+            textstr,
+            transform=self._ax.transAxes,
+            fontsize=14,
+            verticalalignment="top",
+            bbox=props,
+        )
 
         self._fig.canvas.mpl_connect("key_press_event", self._key_press)
 
@@ -130,7 +168,7 @@ class image_labeller:
 
     def _update_title(self):
         self._ax.set_title(
-            f"Image {self._image_index} - Label: {self._labels[self._image_index]}"
+            f"Image {self._image_index}\nLabel: {self._labels[self._image_index]}"
         )
 
     def _update_displayed(self):
@@ -148,7 +186,12 @@ class image_labeller:
                 self._label_keymap[event.key]
             ]
             if self._label_advances:
-                self.image_index += 1
+                if self.image_index == len(self._images)-1:
+                    # make sure we update the title we are on the last image
+                    self._update_title()
+                    self._fig.canvas.draw_idle()
+                else:
+                    self.image_index += 1
             else:
                 # only updating the text
                 self._update_title()
