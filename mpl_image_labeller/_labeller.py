@@ -4,7 +4,6 @@ from matplotlib.backend_bases import key_press_handler
 
 # if TYPE_CHECKING:
 from matplotlib.figure import Figure
-from numpy.typing import ArrayLike
 
 
 def gen_key_press_handler(skip_keys):
@@ -19,9 +18,9 @@ def gen_key_press_handler(skip_keys):
 class image_labeller:
     def __init__(
         self,
-        images: ArrayLike,
-        classes: ArrayLike,
-        init_labels: ArrayLike = None,
+        images,
+        classes,
+        init_labels = None,
         label_keymap: Union[List[str], str] = "1234",
         labelling_advances_image: bool = True,
         fig: Figure = None,
