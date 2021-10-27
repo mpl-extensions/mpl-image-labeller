@@ -37,9 +37,9 @@ class image_labeller:
         label_keymap : list of str, or str
             If a str must be one of the predefined values *1234* (1, 2, 3,..),
             *qwerty* (q, w, e, r, t, y). If an iterable then the items will be assigned
-            in order to the classes. WARNING: These keys will be removed from the default
-            keymap for that figure. So if *s* is included then *s* will no longer save the
-            figure.
+            in order to the classes. WARNING: These keys will be removed from the
+            default keymap for that figure. So if *s* is included then *s* will no
+            longer perform savefig.
         labelling_advances_image : bool, default: True
             Whether labelling an image should advance to the next image.
         fig : Figure
@@ -56,15 +56,17 @@ class image_labeller:
         if label_keymap == "1234":
             if len(classes) > 10:
                 raise ValueError(
-                    "More classes than numbers on the keyboard, please provide a custom keymap"
+                    "More classes than numbers on the keyboard,"
+                    "please provide a custom keymap"
                 )
             self._label_keymap = {f"{(i+1)%10}": i for i in range(len(classes))}
         elif label_keymap == "qwerty":
             if len(classes) > len("qwertyuiop"):
                 raise ValueError(
-                    "More classes than length of qwertyuiop, please provide a custom keymap"
+                    "More classes than length of qwertyuiop,"
+                    "please provide a custom keymap"
                 )
-            self._label_keymap = {c: c for c in "qwertyuiop"[: len(classes)]}
+            self._label_keymap = {"qwertyuiop"[c]: c for c in range(len(classes))}
         else:
             self._label_keymap = {label_keymap[i]: i for i in range(len(label_keymap))}
 
@@ -186,7 +188,7 @@ class image_labeller:
                 self._label_keymap[event.key]
             ]
             if self._label_advances:
-                if self.image_index == len(self._images)-1:
+                if self.image_index == len(self._images) - 1:
                     # make sure we update the title we are on the last image
                     self._update_title()
                     self._fig.canvas.draw_idle()
