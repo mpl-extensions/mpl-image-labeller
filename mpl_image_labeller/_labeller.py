@@ -25,6 +25,7 @@ class image_labeller:
         labelling_advances_image: bool = True,
         N_images=None,
         fig: Figure = None,
+        **imshow_kwargs,
     ):
         """
         Parameters
@@ -49,6 +50,8 @@ class image_labeller:
         fig : Figure
             An empty figure to build the UI in. Use this to embed image_labeller into
             a gui framework.
+        **imshow_kwargs :
+            kwargs to be passed to the imshow function that displays the images.
         """
         self._images = images
         if callable(images):
@@ -114,7 +117,8 @@ class image_labeller:
 
         self._image_index = 0
         self._ax = self._fig.add_subplot(111)
-        self._im = self._ax.imshow(self._get_image(0), aspect="equal")
+        aspect = imshow_kwargs.pop("aspect", "equal")
+        self._im = self._ax.imshow(self._get_image(0), aspect=aspect, **imshow_kwargs)
 
         # shift axis to make room for list of keybindings
         box = self._ax.get_position()
