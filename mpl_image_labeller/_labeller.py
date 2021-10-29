@@ -204,11 +204,13 @@ class image_labeller:
 
     def _update_displayed(self):
         image = np.asarray(self._get_image(self._image_index))
+        # for some reason this keeps getting turned off somewhere
+        self._ax.set_autoscale_on(True)
         self._im.set_data(image)
         self._im.set_extent((-0.5, image.shape[1] - 0.5, image.shape[0] - 0.5, -0.5))
         self._update_title()
         self._observers.process("image-changed", self._image_index, image)
-        self._fig.canvas.draw_idle()
+        self._fig.canvas.draw()
 
     def _key_press(self, event):
         if event.key == "left":
