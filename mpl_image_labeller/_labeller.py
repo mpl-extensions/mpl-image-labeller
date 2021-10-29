@@ -5,6 +5,9 @@ from matplotlib.backend_bases import key_press_handler
 from matplotlib.cbook import CallbackRegistry
 from matplotlib.figure import Figure
 
+from ._util import list_to_onehot, onehot_to_list
+from ._widgets import button_array
+
 
 def gen_key_press_handler(skip_keys):
     def handler(event, canvas=None, toolbar=None):
@@ -25,6 +28,7 @@ class image_labeller:
         labelling_advances_image: bool = True,
         N_images=None,
         fig: Figure = None,
+        multiclass=False,
         **imshow_kwargs,
     ):
         """
@@ -33,6 +37,8 @@ class image_labeller:
         images : (N, Y, X) ArrayLike
         classes : (N,) ArrayLike
             The available classes for the images.
+        multiclass : bool, default: False
+            Whether to allow for an image to have multiple classes or just one.
         init_labels: 1D ArrayLike, optional
             The initial labels for the images. If given it must be the same length as
             *images*
@@ -44,6 +50,7 @@ class image_labeller:
             longer perform savefig.
         labelling_advances_image : bool, default: True
             Whether labelling an image should advance to the next image.
+            Ignored if *multiclass* is True.
         N_images : int or None
             The number of images. Required if passing a Callable for images, otherwise
             ignored.
@@ -53,6 +60,7 @@ class image_labeller:
         **imshow_kwargs :
             kwargs to be passed to the imshow function that displays the images.
         """
+        self._multi = multiclass
         self._images = images
         if callable(images):
             if not isinstance(N_images, int):
@@ -81,6 +89,10 @@ class image_labeller:
         else:
             self._labels = init_labels
 
+        # TODO: sync this up with labels
+        # TODO: make sure init_labels does something here
+        self._onehot = np.zeros((self._N_images, len(classes)), dtype=bool)
+
         if label_keymap == "1234":
             if len(classes) > 10:
                 raise ValueError(
@@ -98,7 +110,8 @@ class image_labeller:
         else:
             self._label_keymap = {label_keymap[i]: i for i in range(len(label_keymap))}
 
-        self._classes = classes
+        # make array for easy indexing
+        self._classes = np.asarray(classes)
 
         if fig is None:
             import matplotlib.pyplot as plt
@@ -116,59 +129,79 @@ class image_labeller:
         )
 
         self._image_index = 0
-        self._ax = self._fig.add_subplot(111)
+        if self._multi:
+            self._image_ax, self._button_ax = self._fig.subplots(1, 2)
+        else:
+            self._image_ax = self._fig.add_subplot(111)
         aspect = imshow_kwargs.pop("aspect", "equal")
-        self._im = self._ax.imshow(self._get_image(0), aspect=aspect, **imshow_kwargs)
+        self._im = self._image_ax.imshow(
+            self._get_image(0), aspect=aspect, **imshow_kwargs
+        )
 
-        # shift axis to make room for list of keybindings
-        box = self._ax.get_position()
-        box.x0 = box.x0 - 0.20
-        box.x1 = box.x1 - 0.20
-        self._ax.set_position(box)
+        if self._multi:
+
+            def on_state_change(new_state, old_state):
+                self._onehot[self._image_index] = new_state
+                # self.labels[self._image_index] = self._classes[new_state]
+
+            texts = []
+            for key, klass in zip(self._label_keymap.keys(), classes):
+                texts.append(f"[{key}]\n{str(klass)}")
+            self._buttons = button_array(texts, self._button_ax)
+            self._buttons.on_state_change(on_state_change)
+        else:
+            # shift axis to make room for list of keybindings
+            box = self._image_ax.get_position()
+            box.x0 = box.x0 - 0.20
+            box.x1 = box.x1 - 0.20
+            self._image_ax.set_position(box)
+
+            # these are matplotlib.patch.Patch properties
+            props = dict(boxstyle="round", facecolor="wheat", alpha=0.5)
+
+            textstr = """Keybindings
+            <- : Previous Image
+            -> : Next Image"""
+
+            self._image_ax.text(
+                1.05,
+                0.95,
+                textstr,
+                transform=self._image_ax.transAxes,
+                fontsize=14,
+                verticalalignment="top",
+                bbox=props,
+                horizontalalignment="left",
+            )
+
+            textstr = """Class Keybindings:\n"""
+            for k, v in self._label_keymap.items():
+                textstr += f"{k} : {self._classes[v]}\n"
+
+            self._image_ax.text(
+                1.05,
+                0.55,
+                textstr,
+                transform=self._image_ax.transAxes,
+                fontsize=14,
+                verticalalignment="top",
+                bbox=props,
+            )
         self._update_title()
-
-        # these are matplotlib.patch.Patch properties
-        props = dict(boxstyle="round", facecolor="wheat", alpha=0.5)
-
-        textstr = """Keybindings
-        <- : Previous Image
-        -> : Next Image"""
-
-        self._ax.text(
-            1.05,
-            0.95,
-            textstr,
-            transform=self._ax.transAxes,
-            fontsize=14,
-            verticalalignment="top",
-            bbox=props,
-            horizontalalignment="left",
-        )
-
-        textstr = """Class Keybindings:\n"""
-        for k, v in self._label_keymap.items():
-            textstr += f"{k} : {self._classes[v]}\n"
-
-        self._ax.text(
-            1.05,
-            0.55,
-            textstr,
-            transform=self._ax.transAxes,
-            fontsize=14,
-            verticalalignment="top",
-            bbox=props,
-        )
 
         self._fig.canvas.mpl_connect("key_press_event", self._key_press)
         self._observers = CallbackRegistry()
 
     @property
     def ax(self):
-        return self._ax
+        return self._image_ax
 
     @property
     def labels(self):
-        return self._labels
+        if self._multi:
+            return onehot_to_list(self._onehot, self._classes)
+        else:
+            return self._labels
 
     @labels.setter
     def labels(self, value):
@@ -176,7 +209,17 @@ class image_labeller:
             raise ValueError(
                 "Length of labels must be the same as the number of images"
             )
-        self._labels = value
+        if self._multi:
+            self._onehot = list_to_onehot(value, self._classes)
+        else:
+            self._labels = value
+
+    @property
+    def labels_onehot(self):
+        if self._multi:
+            return self._onehot
+        else:
+            return list_to_onehot(self._labels, self._classes)
 
     @property
     def image_index(self):
@@ -202,18 +245,25 @@ class image_labeller:
         self._update_displayed()
 
     def _update_title(self):
-        self._ax.set_title(
-            f"Image {self._image_index}\nLabel: {self._labels[self._image_index]}"
-        )
+        text = f"Image {self._image_index}"
+        if not self._multi:
+            text += f"\nLabel: {self._labels[self._image_index]}"
+
+        self._image_ax.set_title(text)
 
     def _update_displayed(self):
         image = np.asarray(self._get_image(self._image_index))
         # for some reason this keeps getting turned off by something
-        self._ax.set_autoscale_on(True)
+        self._image_ax.set_autoscale_on(True)
         self._im.set_data(image)
         self._im.set_extent((-0.5, image.shape[1] - 0.5, image.shape[0] - 0.5, -0.5))
         self._update_title()
         self._observers.process("image-changed", self._image_index, image)
+        if self._multi:
+            with self._buttons.no_callbacks():
+                # TODO: check that this no_callbacks actually works....
+                new_state = self._onehot[self._image_index]
+                self._buttons.set_states(new_state)
         self._fig.canvas.draw_idle()
 
     def _key_press(self, event):
@@ -222,10 +272,16 @@ class image_labeller:
         elif event.key == "right":
             self.image_index += 1
         elif event.key in self._label_keymap:
-            klass = self._classes[self._label_keymap[event.key]]
-            self._labels[self._image_index] = klass
+            which_label = self._label_keymap[event.key]
+            klass = self._classes[which_label]
+            if self._multi:
+                img_labels = self._onehot[self._image_index]
+                img_labels[which_label] = not img_labels[which_label]
+                self._buttons.set_states(img_labels)
+            else:
+                self._labels[self._image_index] = klass
             self._observers.process("label-assigned", self._image_index, klass)
-            if self._label_advances:
+            if self._label_advances and not self._multi:
                 if self.image_index == self._N_images - 1:
                     # make sure we update the title we are on the last image
                     self._update_title()
