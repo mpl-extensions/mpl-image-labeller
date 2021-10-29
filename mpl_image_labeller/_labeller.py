@@ -208,6 +208,8 @@ class image_labeller:
 
     def _update_displayed(self):
         image = np.asarray(self._get_image(self._image_index))
+        # for some reason this keeps getting turned off by something
+        self._ax.set_autoscale_on(True)
         self._im.set_data(image)
         self._im.set_extent((-0.5, image.shape[1] - 0.5, image.shape[0] - 0.5, -0.5))
         self._update_title()

@@ -10,7 +10,7 @@ from mpl_image_labeller import image_labeller
 
 def lazy_image_generator(idx):
     rng = default_rng(idx)
-    return rng.random((10, 10))
+    return rng.random((rng.integers(5, 15), rng.integers(5, 15)))
 
 
 labeller = image_labeller(
