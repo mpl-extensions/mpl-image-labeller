@@ -117,7 +117,7 @@ class image_labeller:
 
         self._image_index = 0
         self._ax = self._fig.add_subplot(111)
-        aspect = imshow_kwargs.pop('aspect', 'equal')
+        aspect = imshow_kwargs.pop("aspect", "equal")
         self._im = self._ax.imshow(self._get_image(0), aspect=aspect, **imshow_kwargs)
 
         # shift axis to make room for list of keybindings
