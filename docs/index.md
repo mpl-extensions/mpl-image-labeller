@@ -6,6 +6,8 @@ Use Matplotlib to label images for classification. Works anywhere Matplotlib doe
 
 ## Key features
 - Single or Multiclass interfaces!
+    - {doc}`examples/single-class`
+    - {doc}`examples/multi-class`
 - Supports lists of classes or onehot encodings
 - Uses keys instead of mouse
 - Only depends on Matplotlib
@@ -13,7 +15,8 @@ Use Matplotlib to label images for classification. Works anywhere Matplotlib doe
 - Displays images with correct aspect ratio
 - Easily configurable keymap
 - Smart interactions with default Matplotlib keymap
-- Callback System (see `examples/callbacks.py`)
+- Callback System (see {doc}`examples/callbacks`)
+- Allows Lazy Loading of Images ({doc}`examples/lazy-loading`)
 
 ## Install
 ```bash
@@ -26,11 +29,11 @@ pip install mpl-image-labeller
 
 | Single Class Interface | Multiclass Interface |
 | ----------------------- | --------------------|
-|![alt](_static/single_class.gif) | ![alt](_static/multi_class.gif)|
+|![A gif of the single class interface. Showing keybindings to assign classes to images.](_static/single_class.gif) | ![A gif of the multi-class interface. Showing using both keybindings and mouse to assign classes to images.](_static/multi_class.gif)|
 ```
 
 ## Getting help
-Please ask usage questions on https://discourse.matplotlib.org/c/3rdparty/18. When you do so feel free
+Please ask usage questions on the [Matplotlib 3rd Party Package Discourse](https://discourse.matplotlib.org/c/3rdparty/18). When you do so feel free
 to use `@ianhi` to ping me.
 
 ## Reporting Issues
