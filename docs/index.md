@@ -26,7 +26,7 @@ pip install mpl-image-labeller
 
 | Single Class Interface | Multiclass Interface |
 | ----------------------- | --------------------|
-|![alt](_static/single_class.gif) | ![alt](_static/single_class.gif)|
+|![alt](_static/single_class.gif) | ![alt](_static/multi_class.gif)|
 ```
 
 ## Getting help
