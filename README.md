@@ -1,10 +1,16 @@
 # mpl-image-labeller
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ianhi/mpl-image-labeller/main?urlpath=lab)
+[![Documentation Status](https://readthedocs.org/projects/mpl-image-labeller/badge/?version=stable)](https://mpl-image-labeller.readthedocs.io/en/stable/?badge=stable)
+
+
 [![License](https://img.shields.io/pypi/l/mpl-image-labeller.svg?color=green)](https://github.com/ianhi/mpl-image-labeller/raw/master/LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/mpl-image-labeller.svg?color=green)](https://pypi.org/project/mpl-image-labeller)
 [![Python Version](https://img.shields.io/pypi/pyversions/mpl-image-labeller.svg?color=green)](https://python.org)
 
 Use Matplotlib to label images for classification. Works anywhere Matplotlib does - from the notebook to a standalone gui!
+
+For more see the [documentation](https://mpl-image-labeller.readthedocs.io/en/stable/?badge=stable).
 
 ## Install
 
@@ -21,7 +27,13 @@ pip install mpl-image-labeller
 - Smart interactions with default Matplotlib keymap
 - Callback System (see `examples/callbacks.py`)
 
-![gif of usage for labelling images of cats and dogs](example.gif)
+**single class per image**
+
+![gif of usage for labelling images of cats and dogs](docs/_static/single_class.gif)
+
+**multiple classes per image**
+
+![gif of usage for labelling images of cats and dogs](docs/_static/multi_class.gif)
 
 ## Usage
 

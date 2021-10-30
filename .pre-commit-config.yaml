@@ -36,3 +36,12 @@ repos:
     rev: v0.812
     hooks:
       - id: mypy
+  - repo: https://github.com/nbQA-dev/nbQA
+    rev: 1.1.1
+    hooks:
+      - id: nbqa-black
+      - id: nbqa-isort
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.5.0
+    hooks:
+      - id: nbstripout
