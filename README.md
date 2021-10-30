@@ -10,6 +10,8 @@
 
 Use Matplotlib to label images for classification. Works anywhere Matplotlib does - from the notebook to a standalone gui!
 
+For more see the [documentation](https://mpl-image-labeller.readthedocs.io/en/stable/?badge=stable).
+
 ## Install
 
 ```bash
@@ -25,7 +27,13 @@ pip install mpl-image-labeller
 - Smart interactions with default Matplotlib keymap
 - Callback System (see `examples/callbacks.py`)
 
-![gif of usage for labelling images of cats and dogs](docs/_static/example.gif)
+**single class per image**
+
+![gif of usage for labelling images of cats and dogs](docs/_static/single_class.gif)
+
+**multiple classes per image**
+
+![gif of usage for labelling images of cats and dogs](docs/_static/multi_class.gif)
 
 ## Usage
 
