@@ -21,7 +21,7 @@ pip install mpl-image-labeller
 - Smart interactions with default Matplotlib keymap
 - Callback System (see `examples/callbacks.py`)
 
-![gif of usage for labelling images of cats and dogs](example.gif)
+![gif of usage for labelling images of cats and dogs](docs/_static/example.gif)
 
 ## Usage
 

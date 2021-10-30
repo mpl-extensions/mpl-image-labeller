@@ -1,0 +1,22 @@
+/* Fix numpydoc format delimiters */
+.classifier:before {
+  font-style: normal;
+  margin: 0.5em;
+  content: ":";
+}
+
+/* override table no-wrap */
+.wy-table-responsive table td,
+.wy-table-responsive table th {
+  white-space: normal;
+}
+
+.text-align\:left, text-align\:left > p {
+  text-align: left
+}
+.text-align\:center, text-align\:center > p {
+  text-align: center
+}
+.text-align\:center, text-align\:right > p {
+  text-align: right
+}
