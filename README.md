@@ -12,7 +12,7 @@ Use Matplotlib to label images for classification. Works anywhere Matplotlib doe
 
 For more see the [documentation](https://mpl-image-labeller.readthedocs.io/en/stable/?badge=stable).
 
-## Install
+## Installddd
 
 ```bash
 pip install mpl-image-labeller
