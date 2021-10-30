@@ -59,8 +59,11 @@ class button_array:
         self._buttons = []
         self._active_color = active_color
         self._inactive_color = inactive_color
+        nrow = np.ceil(len(options) / ncol)
+        total_height = nrow * height
+        top = 0.5 + (total_height / 2)
         for i, o in enumerate(options):
-            vert_pos = 1 - ((i // ncol) * (height + gap)) - height
+            vert_pos = top - ((i // ncol) * (height + gap)) - height
             horiz_pos = (i % ncol) * (width + gap)
             button = _array_button(
                 horiz_pos, vert_pos, width, height, active_color, inactive_color
