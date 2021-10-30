@@ -106,6 +106,8 @@ class image_labeller:
                     "please provide a custom keymap"
                 )
             self._label_keymap = {"qwertyuiop"[c]: c for c in range(len(classes))}
+        elif len(label_keymap) != len(classes):
+            raise ValueError("label_keymap must have the same length as classes")
         else:
             self._label_keymap = {label_keymap[i]: i for i in range(len(label_keymap))}
 
