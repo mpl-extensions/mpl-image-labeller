@@ -209,10 +209,16 @@ class image_labeller:
 
     @property
     def ax(self):
+        """
+        **readonly** - The `~matplotlib.axes.Axes` object the image's are displayed on.
+        """
         return self._image_ax
 
     @property
     def labels(self):
+        """
+        The current labels as a list of lists or a list of strings.
+        """
         if self._multi:
             return onehot_to_list(self._onehot, self._classes)
         else:
@@ -231,6 +237,9 @@ class image_labeller:
 
     @property
     def labels_onehot(self):
+        """
+        The current labels as a one hot encoding.
+        """
         if self._multi:
             return self._onehot
         else:
@@ -252,6 +261,9 @@ class image_labeller:
 
     @property
     def image_index(self):
+        """
+        **int** the index of the currently displayed image.
+        """
         return self._image_index
 
     @image_index.setter
