@@ -5,7 +5,7 @@ from matplotlib.backend_bases import key_press_handler
 from matplotlib.cbook import CallbackRegistry
 from matplotlib.figure import Figure
 
-from ._util import list_to_onehot, onehot_to_list
+from ._util import ConflictingArgumentsError, list_to_onehot, onehot_to_list
 from ._widgets import button_array
 
 
@@ -24,6 +24,7 @@ class image_labeller:
         images,
         classes,
         init_labels=None,
+        init_labels_onehot=None,
         label_keymap: Union[List[str], str] = "1234",
         labelling_advances_image: bool = True,
         N_images=None,
@@ -39,9 +40,14 @@ class image_labeller:
             The available classes for the images.
         multiclass : bool, default: False
             Whether to allow for an image to have multiple classes or just one.
-        init_labels: 1D ArrayLike, optional
+        init_labels: list of list or list of str, optional
             The initial labels for the images. If given it must be the same length as
-            *images*
+            *images* and each entry should be either a single class or an iterable of
+            classes. Incompatible with *init_labels_onehot*.
+        init_labels_onehot: 2D ArrayLike, optional
+            The initial labels for the images as a onehot encoding. If given it must
+            have shape (N_images, N_classes) and be castable to a boolean array.
+            Incompatible with *init_labels*.
         label_keymap : list of str, or str
             If a str must be one of the predefined values *1234* (1, 2, 3,..),
             *qwerty* (q, w, e, r, t, y). If an iterable then the items will be assigned
@@ -82,13 +88,6 @@ class image_labeller:
 
         self._label_advances = labelling_advances_image
 
-        if init_labels is None:
-            self._labels = [None] * self._N_images
-        elif len(init_labels) != self._N_images:
-            raise ValueError("init_labels must have the same length as images")
-        else:
-            self._labels = init_labels
-
         # TODO: sync this up with labels
         # TODO: make sure init_labels does something here
         self._onehot = np.zeros((self._N_images, len(classes)), dtype=bool)
@@ -112,6 +111,22 @@ class image_labeller:
 
         # make array for easy indexing
         self._classes = np.asarray(classes)
+
+        if init_labels is not None and init_labels_onehot is not None:
+            raise ConflictingArgumentsError(
+                "init_labels and init_labels_onehot cannot both be *None*"
+            )
+
+        if init_labels is not None:
+            # length errors are handled in the setter
+            self.labels = init_labels
+        elif init_labels_onehot is not None:
+            self.labels_onehot = init_labels_onehot
+        else:
+            if self._multi:
+                self.labels = [[]] * self._N_images
+            else:
+                self.labels = [None] * self._N_images
 
         if fig is None:
             import matplotlib.pyplot as plt

@@ -9,6 +9,7 @@ __all__ = [
     "add_text_to_rect",
     "list_to_onehot",
     "onehot_to_list",
+    "ConflictingArgumentsError",
 ]
 
 
@@ -66,3 +67,7 @@ def onehot_to_list(onehot, classes):
     for row in onehot:
         labels.append(list(c_arr[row]))
     return labels
+
+
+class ConflictingArgumentsError(ValueError):
+    pass
