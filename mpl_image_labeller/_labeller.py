@@ -221,6 +221,20 @@ class image_labeller:
         else:
             return list_to_onehot(self._labels, self._classes)
 
+    @labels_onehot.setter
+    def labels_onehot(self, value):
+        value = np.asanyarray(value)
+        expected_shape = (self._N_images, len(self._classes))
+        if value.shape != expected_shape:
+            raise ValueError(
+                "One hot labels must have shape (N images, num classes."
+                f"Expected shape {expected_shape} but got {value.shape}"
+            )
+        if self._multi:
+            self._onehot = value
+        else:
+            self._labels = onehot_to_list(value)
+
     @property
     def image_index(self):
         return self._image_index
