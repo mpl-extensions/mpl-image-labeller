@@ -1,5 +1,6 @@
 # mpl-image-labeller
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ianhi/mpl-image-labeller/main?urlpath=lab)
 [![License](https://img.shields.io/pypi/l/mpl-image-labeller.svg?color=green)](https://github.com/ianhi/mpl-image-labeller/raw/master/LICENSE)
 [![PyPI](https://img.shields.io/pypi/v/mpl-image-labeller.svg?color=green)](https://pypi.org/project/mpl-image-labeller)
 [![Python Version](https://img.shields.io/pypi/pyversions/mpl-image-labeller.svg?color=green)](https://python.org)
