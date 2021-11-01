@@ -166,9 +166,13 @@ class image_labeller:
 
         self._image_index = 0
         if self._multi:
-            self._image_ax, self._button_ax = self._fig.subplots(1, 2)
+            self._image_ax, self._info_ax = self._fig.subplots(1, 2)
         else:
-            self._image_ax = self._fig.add_subplot(111)
+            gs = self._fig.add_gridspec(1, 5)
+            self._image_ax = self._fig.add_subplot(gs[:, :-1])
+            self._info_ax = self._fig.add_subplot(gs[:, -1])
+
+        self._info_ax.axis("off")
         aspect = imshow_kwargs.pop("aspect", "equal")
         self._im = self._image_ax.imshow(
             self._get_image(0), aspect=aspect, **imshow_kwargs
@@ -183,14 +187,14 @@ class image_labeller:
             texts = []
             for key, klass in zip(self._label_keymap.keys(), classes):
                 texts.append(f"[{key}]\n{str(klass)}")
-            self._buttons = button_array(texts, self._button_ax)
+            self._buttons = button_array(texts, self._info_ax)
             self._buttons.on_state_change(on_state_change)
         else:
             # shift axis to make room for list of keybindings
-            box = self._image_ax.get_position()
-            box.x0 = box.x0 - 0.20
-            box.x1 = box.x1 - 0.20
-            self._image_ax.set_position(box)
+            # box = self._image_ax.get_position()
+            # box.x0 = box.x0 - 0.20
+            # box.x1 = box.x1 - 0.20
+            # self._image_ax.set_position(box)
 
             # these are matplotlib.patch.Patch properties
             props = dict(boxstyle="round", facecolor="wheat", alpha=0.5)
@@ -200,11 +204,11 @@ class image_labeller:
             -> : Next Image"""
             horiz_pos = 0.575
 
-            self._image_ax.text(
+            self._info_ax.text(
                 horiz_pos,
                 0.75,
                 textstr,
-                transform=self._fig.transFigure,
+                # transform=self._fig.transFigure,
                 fontsize=14,
                 verticalalignment="top",
                 bbox=props,
@@ -215,22 +219,22 @@ class image_labeller:
             for k, v in self._label_keymap.items():
                 textstr += f"{k} : {self._classes[v]}\n"
 
-            self._image_ax.text(
+            self._info_ax.text(
                 horiz_pos,
                 0.55,
                 textstr,
-                transform=self._fig.transFigure,
+                # transform=self._fig.transFigure,
                 fontsize=14,
                 verticalalignment="top",
                 bbox=props,
             )
 
             textstr = f"Current Class:\n{str(self._labels[0])}"
-            self._class_display = self._image_ax.text(
+            self._class_display = self._info_ax.text(
                 horiz_pos,
                 0.25,
                 textstr,
-                transform=self._fig.transFigure,
+                # transform=self._fig.transFigure,
                 fontsize=14,
                 verticalalignment="top",
                 bbox=props,
