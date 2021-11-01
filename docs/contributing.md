@@ -65,3 +65,9 @@ tox -e doclive
 ```
 
 In a few seconds your web browser should open up the documentation. Now whenever you save a file the documentation will automatically regenerate and the webpage will refresh for you!
+
+
+### Making frontpage gifs
+The frontpage gifs are generated from the `examples/create_example.py` script. I used peek with a resolution of 638x653 and recorded the keystrokes using `screenkey -g screenkey -g 640x537+308+543`.
+
+Those numbers came from using `slop` which can be used with screenkey like so: `screenkey -g $(slop -n -f '%g')`
