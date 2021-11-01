@@ -23,13 +23,14 @@ class image_labeller:
         self,
         images,
         classes,
+        multiclass=False,
+        label_keymap: Union[List[str], str] = "1234",
+        title=None,
         init_labels=None,
         init_labels_onehot=None,
-        label_keymap: Union[List[str], str] = "1234",
         labelling_advances_image: bool = True,
         N_images=None,
         fig: Figure = None,
-        multiclass=False,
         **imshow_kwargs,
     ):
         """
@@ -40,6 +41,17 @@ class image_labeller:
             The available classes for the images.
         multiclass : bool, default: False
             Whether to allow for an image to have multiple classes or just one.
+        label_keymap : list of str, or str
+            If a str must be one of the predefined values *1234* (1, 2, 3,..),
+            *qwerty* (q, w, e, r, t, y). If an iterable then the items will be assigned
+            in order to the classes. WARNING: These keys will be removed from the
+            default keymap for that figure. So if *s* is included then *s* will no
+            longer perform savefig.
+        title : str or Callable, optional
+            A {} style format string for the title of images or a function that
+            returns a title string given the image index. If a format string
+            then it will be used with ``title.format(image_index=...)``. If *None*
+            then the default str of 'Image Index: {image_index}' will be used.
         init_labels: list of list or list of str, optional
             The initial labels for the images. If given it must be the same length as
             *images* and each entry should be either a single class or an iterable of
@@ -48,12 +60,6 @@ class image_labeller:
             The initial labels for the images as a onehot encoding. If given it must
             have shape (N_images, N_classes) and be castable to a boolean array.
             Incompatible with *init_labels*.
-        label_keymap : list of str, or str
-            If a str must be one of the predefined values *1234* (1, 2, 3,..),
-            *qwerty* (q, w, e, r, t, y). If an iterable then the items will be assigned
-            in order to the classes. WARNING: These keys will be removed from the
-            default keymap for that figure. So if *s* is included then *s* will no
-            longer perform savefig.
         labelling_advances_image : bool, default: True
             Whether labelling an image should advance to the next image.
             Ignored if *multiclass* is True.
@@ -68,6 +74,19 @@ class image_labeller:
         """
         self._multi = multiclass
         self._images = images
+        if title is None:
+            title = "Image Index: {image_index}"
+        if isinstance(title, str):
+
+            def _title(image_index):
+                return title.format(image_index=image_index)
+
+            self._title = _title
+        elif callable(title):
+            self._title = title
+        else:
+            raise TypeError("Title must be a str or a Callable")
+
         if callable(images):
             if not isinstance(N_images, int):
                 raise TypeError(
@@ -204,6 +223,18 @@ class image_labeller:
                 verticalalignment="top",
                 bbox=props,
             )
+
+            textstr = f"Current Class:\n{str(self._labels[0])}"
+            self._class_display = self._image_ax.text(
+                1.05,
+                0.15,
+                textstr,
+                transform=self._image_ax.transAxes,
+                fontsize=14,
+                verticalalignment="top",
+                bbox=props,
+            )
+
         self._update_title()
 
         self._fig.canvas.mpl_connect("key_press_event", self._key_press)
@@ -288,10 +319,7 @@ class image_labeller:
         self._update_displayed()
 
     def _update_title(self):
-        text = f"Image {self._image_index}"
-        if not self._multi:
-            text += f"\nLabel: {self._labels[self._image_index]}"
-
+        text = self._title(self._image_index)
         self._image_ax.set_title(text)
 
     def _update_displayed(self):
@@ -307,6 +335,9 @@ class image_labeller:
                 # TODO: check that this no_callbacks actually works....
                 new_state = self._onehot[self._image_index]
                 self._buttons.set_states(new_state)
+        else:
+            textstr = f"Current Class:\n{str(self._labels[self._image_index])}"
+            self._class_display.set_text(textstr)
         self._fig.canvas.draw_idle()
 
     def _key_press(self, event):
@@ -328,6 +359,8 @@ class image_labeller:
                 if self.image_index == self._N_images - 1:
                     # make sure we update the title we are on the last image
                     self._update_title()
+                    textstr = f"Current Class:\n{str(self._labels[self._image_index])}"
+                    self._class_display.set_text(textstr)
                     self._fig.canvas.draw_idle()
                 else:
                     self.image_index += 1
