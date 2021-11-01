@@ -198,12 +198,13 @@ class image_labeller:
             textstr = """Keybindings
             <- : Previous Image
             -> : Next Image"""
+            horiz_pos = 0.575
 
             self._image_ax.text(
-                1.05,
-                0.95,
+                horiz_pos,
+                0.75,
                 textstr,
-                transform=self._image_ax.transAxes,
+                transform=self._fig.transFigure,
                 fontsize=14,
                 verticalalignment="top",
                 bbox=props,
@@ -215,10 +216,10 @@ class image_labeller:
                 textstr += f"{k} : {self._classes[v]}\n"
 
             self._image_ax.text(
-                1.05,
+                horiz_pos,
                 0.55,
                 textstr,
-                transform=self._image_ax.transAxes,
+                transform=self._fig.transFigure,
                 fontsize=14,
                 verticalalignment="top",
                 bbox=props,
@@ -226,10 +227,10 @@ class image_labeller:
 
             textstr = f"Current Class:\n{str(self._labels[0])}"
             self._class_display = self._image_ax.text(
-                1.05,
-                0.15,
+                horiz_pos,
+                0.25,
                 textstr,
-                transform=self._image_ax.transAxes,
+                transform=self._fig.transFigure,
                 fontsize=14,
                 verticalalignment="top",
                 bbox=props,
