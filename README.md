@@ -1,6 +1,6 @@
 # mpl-image-labeller
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ianhi/mpl-image-labeller/main?urlpath=lab)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ianhi/mpl-image-labeller/main?urlpath=lab/tree/docs/examples)
 [![Documentation Status](https://readthedocs.org/projects/mpl-image-labeller/badge/?version=stable)](https://mpl-image-labeller.readthedocs.io/en/stable/?badge=stable)
 
 
