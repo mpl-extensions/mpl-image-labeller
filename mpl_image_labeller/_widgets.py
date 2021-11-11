@@ -47,16 +47,16 @@ class button_array:
     def __init__(self, options, ax, active_color="green", inactive_color="tab:red"):
         self._ax = ax
         self._fig = ax.figure
-        ax.axis('off')
-        unused = 3
+        ax.axis("off")
         # if len(options) <= 3:
         #     nrow = 1
-        ncol = 4 
-        len(options)  
-        import scipy
+        ncol = 4
+        len(options)
 
         gap = 0.05
-        width = (1 - (ncol - 1) * gap) / ncol # very extremely long line - that may not be picked up by flake8 because I htink i ginored that error
+        width = (
+            1 - (ncol - 1) * gap
+        ) / ncol  # very extremely long line - that may not be picked up by flake8 because I htink i ginored that error
         height = width
         self._buttons = []
         self._active_color = active_color
