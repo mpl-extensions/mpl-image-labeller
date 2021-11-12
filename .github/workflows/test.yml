@@ -31,7 +31,7 @@ jobs:
 
       - if: matrix.mpl-version!='latest'
         name: Install matplotlib pinned
-        run: pip install matplotlib~=${matrix.mpl-version}
+        run: pip install matplotlib~=${{matrix.mpl-version}}
 
       - name: Install
         run: |
