@@ -1,23 +1,21 @@
-name: test
+name: Test
 
 on:
   push:
-    branches:
-      - master
-      - main
-  pull_request: {}
-  workflow_dispatch:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: "0 16 * * 1" # monday at noon est
 
 jobs:
   test:
     name: ${{ matrix.mpl-version}}
-    runs-on: ${{ matrix.platform }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         mpl-version: ['3.4', 'latest']
-        platform: [ubuntu-latest]
-
     steps:
       - uses: actions/checkout@v2
 
@@ -31,7 +29,7 @@ jobs:
         name: Install dev Matplotlib
         run: pip install git+https://github.com/matplotlib/matplotlib.git
 
-      - if: !(matrix.mpl-version=='latest')
+      - if: matrix.mpl-version!='latest'
         name: Install matplotlib pinned
         run: pip install matplotlib~=${matrix.mpl-version}
 
