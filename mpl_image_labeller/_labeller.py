@@ -174,6 +174,8 @@ class image_labeller:
 
         self._info_ax.axis("off")
         aspect = imshow_kwargs.pop("aspect", "equal")
+        self._vmin = imshow_kwargs.get("vmin", None)
+        self._vmax = imshow_kwargs.get("vmax", None)
         self._im = self._image_ax.imshow(
             self._get_image(0), aspect=aspect, **imshow_kwargs
         )
@@ -332,6 +334,14 @@ class image_labeller:
         # for some reason this keeps getting turned off by something
         self._image_ax.set_autoscale_on(True)
         self._im.set_data(image)
+
+        # autoscaling of colormaps if necessary
+        if image.ndim != 3:
+            if self._vmin is None:
+                self._im.norm.vmin = image.min()
+            if self._vmax is None:
+                self._im.norm.vmax = image.max()
+
         self._im.set_extent((-0.5, image.shape[1] - 0.5, image.shape[0] - 0.5, -0.5))
         self._update_title()
         self._observers.process("image-changed", self._image_index, image)
