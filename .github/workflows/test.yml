@@ -1,0 +1,46 @@
+name: test
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request: {}
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: ${{ matrix.mpl-version}}
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        mpl-version: ['3.4', 'latest']
+        platform: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+
+      - if: matrix.mpl-version=='latest'
+        name: Install dev Matplotlib
+        run: pip install git+https://github.com/matplotlib/matplotlib.git
+
+      - if: !(matrix.mpl-version=='latest')
+        name: Install matplotlib pinned
+        run: pip install matplotlib~=${matrix.mpl-version}
+
+      - name: Install
+        run: |
+          pip install -e .
+
+      - name: Run Tests
+        run: pytest -v --color=yes --cov=mpl_image_labeller --cov-report=xml
+
+      - name: Coverage
+        uses: codecov/codecov-action@v2
