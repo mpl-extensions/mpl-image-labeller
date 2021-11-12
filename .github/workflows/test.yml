@@ -36,7 +36,8 @@ jobs:
 
       - name: Install
         run: |
-          pip install -e .
+          pip install -e ".[testing]"
+          pip install pytest-cov
 
       - name: Run Tests
         run: pytest -v --color=yes --cov=mpl_image_labeller --cov-report=xml
