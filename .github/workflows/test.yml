@@ -16,6 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         mpl-version: ['3.4', 'latest']
+        python-version: [3.9]
     steps:
       - uses: actions/checkout@v2
 
@@ -31,11 +32,12 @@ jobs:
 
       - if: matrix.mpl-version!='latest'
         name: Install matplotlib pinned
-        run: pip install matplotlib~=${matrix.mpl-version}
+        run: pip install matplotlib~=${{matrix.mpl-version}}
 
       - name: Install
         run: |
-          pip install -e .
+          pip install -e ".[testing]"
+          pip install pytest-cov
 
       - name: Run Tests
         run: pytest -v --color=yes --cov=mpl_image_labeller --cov-report=xml
