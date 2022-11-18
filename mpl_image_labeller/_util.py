@@ -52,7 +52,9 @@ def list_to_onehot(labels, classes):
     arr = np.zeros((len(labels), len(classes)), dtype=bool)
     for i, l in enumerate(labels):
 
-        if isinstance(l, str) or not isinstance(l, Iterable):
+        if l is None:
+            continue
+        elif isinstance(l, str) or not isinstance(l, Iterable):
             # str, or number, or something like that
             arr[i, lookup[l]] = True
         else:
